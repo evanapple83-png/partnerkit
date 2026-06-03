@@ -312,6 +312,8 @@ export async function lookupMany(inputs: string[]): Promise<TenantResult[]> {
 export interface CompanyMatch {
   companyName: string;
   logo?: string;
+  /** Where this candidate came from. */
+  source: "directory" | "tld-variant";
   result: TenantResult;
 }
 
@@ -321,14 +323,43 @@ interface ClearbitSuggestion {
   logo: string | null;
 }
 
+/** Total candidate domains checked per discovery run. */
+export const DISCOVER_LIMIT = 15;
+
+// Common ccTLDs/registrations for multinationals; used to widen the candidate
+// list beyond what the company directory returns (regional tenants often live
+// on their own ccTLD domain, like the Heineken NL vs MX split).
+const TLD_VARIANTS = [
+  "com",
+  "nl",
+  "de",
+  "co.uk",
+  "fr",
+  "be",
+  "it",
+  "es",
+  "se",
+  "ch",
+  "com.au",
+  "ca",
+  "us",
+  "ie",
+  "at",
+  "dk",
+  "no",
+  "pl",
+];
+
 /** Resolve a company name to candidate domains, each enriched with a tenant lookup. */
 export async function discoverByCompany(name: string): Promise<{
   query: string;
+  checked: number;
   matches: CompanyMatch[];
   note?: string;
 }> {
   const query = name.trim();
-  if (!query) return { query, matches: [], note: "Enter a company name." };
+  if (!query)
+    return { query, checked: 0, matches: [], note: "Enter a company name." };
 
   let suggestions: ClearbitSuggestion[] = [];
   try {
@@ -341,34 +372,57 @@ export async function discoverByCompany(name: string): Promise<{
   } catch {
     return {
       query,
+      checked: 0,
       matches: [],
       note: "Company directory is unavailable right now. Try a domain instead.",
     };
   }
 
-  // De-dupe domains, keep first label per domain, cap the fan-out.
+  // De-dupe directory hits, keep first label per domain.
   const seen = new Set<string>();
-  const picks = suggestions
-    .filter((s) => s.domain && !seen.has(s.domain) && seen.add(s.domain))
-    .slice(0, 8);
+  const picks = suggestions.filter(
+    (s) => s.domain && !seen.has(s.domain) && seen.add(s.domain),
+  );
 
   if (picks.length === 0) {
-    return { query, matches: [], note: "No companies matched that name." };
+    return { query, checked: 0, matches: [], note: "No companies matched that name." };
   }
 
-  const matches = await mapLimit(picks, 6, async (s) => ({
+  // Widen with ccTLD variants of the top match's base label, up to the cap.
+  // heineken.com -> heineken.nl, heineken.de, heineken.co.uk, ...
+  const top = picks[0];
+  const base = top.domain.split(".")[0];
+  const variants: ClearbitSuggestion[] = [];
+  if (base.length >= 3) {
+    for (const tld of TLD_VARIANTS) {
+      if (picks.length + variants.length >= DISCOVER_LIMIT) break;
+      const domain = `${base}.${tld}`;
+      if (seen.has(domain)) continue;
+      seen.add(domain);
+      variants.push({ name: top.name, domain, logo: null });
+    }
+  }
+
+  const candidates = [
+    ...picks.slice(0, DISCOVER_LIMIT).map((s) => ({ s, source: "directory" as const })),
+    ...variants.map((s) => ({ s, source: "tld-variant" as const })),
+  ].slice(0, DISCOVER_LIMIT);
+
+  const matches = await mapLimit(candidates, 8, async ({ s, source }) => ({
     companyName: s.name,
     logo: s.logo ?? undefined,
+    source,
     result: await lookupTenant(s.domain),
   }));
 
-  // Live tenants first, then by name.
+  // Live tenants first; within each group directory hits before variants.
   matches.sort((a, b) => {
     if (a.result.found !== b.result.found) return a.result.found ? -1 : 1;
+    if (a.source !== b.source) return a.source === "directory" ? -1 : 1;
     return a.companyName.localeCompare(b.companyName);
   });
 
-  return { query, matches };
+  return { query, checked: matches.length, matches };
 }
 
 /** Validate a tenant GUID by resolving its OpenID config (reverse lookup). */

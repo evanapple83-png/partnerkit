@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { GitHubIcon } from "@/components/Brand";
+import { HeroLookup } from "@/components/HeroLookup";
 
 const REPO_URL = "https://github.com/evanapple83-png/partnerkit";
 
@@ -60,13 +61,6 @@ const TOOLS: Tool[] = [
   },
 ];
 
-const PROOF = [
-  ["0", "accounts or API keys"],
-  ["4", "public Microsoft sources"],
-  ["50", "domains per bulk run"],
-  ["MIT", "licensed, forever"],
-] as const;
-
 export default function Home() {
   return (
     <div className="relative overflow-hidden">
@@ -74,61 +68,58 @@ export default function Home() {
       <div className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute inset-0 h-[42rem] bg-grid" />
         <div
-          className="absolute left-1/2 top-[-14rem] h-[30rem] w-[44rem] -translate-x-1/2 rounded-full blur-[110px] animate-glow-drift"
+          className="absolute left-1/2 top-[-16rem] h-[30rem] w-[44rem] -translate-x-1/2 rounded-full blur-[120px]"
           style={{
             background:
-              "radial-gradient(closest-side, rgba(76,154,255,0.28), rgba(47,127,232,0.10), transparent)",
+              "radial-gradient(closest-side, rgba(76,154,255,0.16), rgba(47,127,232,0.06), transparent)",
           }}
         />
       </div>
 
       <div className="mx-auto max-w-5xl px-5">
-        {/* Hero */}
+        {/* Hero: the product itself, front and center */}
         <section className="pt-20 sm:pt-28 pb-16 text-center">
-          <p className="animate-fade-up inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3.5 py-1.5 text-xs text-muted backdrop-blur">
-            <span className="relative flex h-1.5 w-1.5">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-good opacity-60" />
-              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-good" />
-            </span>
-            Free · open source · no login
-          </p>
-
-          <h1 className="animate-fade-up delay-100 text-hero mx-auto mt-7 max-w-3xl text-balance text-4xl sm:text-6xl md:text-7xl font-semibold leading-[1.05] tracking-tighter">
-            Tools for the Microsoft partner community
+          <h1 className="animate-fade-up text-hero mx-auto max-w-2xl text-balance text-4xl sm:text-5xl md:text-6xl font-semibold leading-[1.08] tracking-tighter">
+            Any Microsoft tenant.
+            <br />
+            One lookup away.
           </h1>
 
-          <p className="animate-fade-up delay-200 mx-auto mt-6 max-w-xl text-balance text-muted text-base sm:text-lg leading-relaxed">
-            Fast lookups for Partner Center, CSP and Microsoft 365, built on
-            public Microsoft endpoints. No accounts, no API keys, nothing
-            stored.
+          <p className="animate-fade-up delay-100 mx-auto mt-5 max-w-md text-balance text-muted text-base leading-relaxed">
+            Tenant ID, region, cloud and mail posture for every domain. Free
+            for the partner community, nothing stored.
           </p>
 
-          <div className="animate-fade-up delay-300 mt-9 flex items-center justify-center gap-3">
-            <Link
-              href="/tools/tenant-lookup"
-              className="btn-primary rounded-full px-6 py-3 text-sm font-medium text-white"
-            >
-              Open Tenant Lookup
-            </Link>
+          <div className="animate-fade-up delay-200 mt-9">
+            <HeroLookup />
+          </div>
+
+          <div className="animate-fade-up delay-300 mt-8 flex items-center justify-center gap-5 text-xs text-muted">
             <a
               href={REPO_URL}
               target="_blank"
               rel="noreferrer"
-              className="btn-secondary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-medium"
+              className="inline-flex items-center gap-1.5 hover:text-foreground transition-colors"
             >
-              <GitHubIcon size={15} />
-              Star on GitHub
+              <GitHubIcon size={13} />
+              Open source, MIT
             </a>
-          </div>
-
-          {/* Proof strip */}
-          <div className="animate-fade-up delay-400 mx-auto mt-14 grid max-w-2xl grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-5">
-            {PROOF.map(([n, label]) => (
-              <div key={label}>
-                <p className="text-2xl font-semibold tracking-tight">{n}</p>
-                <p className="mt-0.5 text-xs text-muted">{label}</p>
-              </div>
-            ))}
+            <span className="h-3 w-px bg-white/15" />
+            <Link
+              href="/tools/tenant-lookup"
+              className="hover:text-foreground transition-colors"
+            >
+              Bulk &amp; company search
+            </Link>
+            <span className="h-3 w-px bg-white/15" />
+            <a
+              href={`${REPO_URL}#free-api`}
+              target="_blank"
+              rel="noreferrer"
+              className="hover:text-foreground transition-colors"
+            >
+              Free API
+            </a>
           </div>
         </section>
 

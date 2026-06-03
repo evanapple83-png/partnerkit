@@ -8,6 +8,7 @@ export function CompanyLookup() {
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const [matches, setMatches] = useState<CompanyMatch[] | null>(null);
+  const [checked, setChecked] = useState(0);
   const [note, setNote] = useState<string | null>(null);
 
   async function run(e: React.FormEvent) {
@@ -21,10 +22,12 @@ export function CompanyLookup() {
       const res = await fetch(`/api/discover?company=${encodeURIComponent(q)}`);
       const data = (await res.json()) as {
         matches?: CompanyMatch[];
+        checked?: number;
         note?: string;
         error?: string;
       };
       setMatches(data.matches ?? []);
+      setChecked(data.checked ?? data.matches?.length ?? 0);
       setNote(data.note ?? data.error ?? null);
     } catch {
       setNote("Discovery failed. Check your connection and try again.");
@@ -32,6 +35,8 @@ export function CompanyLookup() {
       setLoading(false);
     }
   }
+
+  const foundCount = matches?.filter((m) => m.result.found).length ?? 0;
 
   return (
     <div className="space-y-5">
@@ -55,8 +60,9 @@ export function CompanyLookup() {
       </form>
 
       <p className="text-xs text-muted">
-        Resolves a company name to likely domains, then checks which are live
-        Microsoft 365 tenants. Domains with a tenant are listed first.
+        Resolves a company name to likely domains (directory matches plus
+        regional ccTLD variants), then checks which are live Microsoft 365
+        tenants. Domains with a tenant are listed first.
       </p>
 
       {loading && (
@@ -74,6 +80,11 @@ export function CompanyLookup() {
 
       {matches && matches.length > 0 && (
         <div className="space-y-2.5">
+          <p className="text-sm text-muted">
+            <span className="text-good font-medium">{foundCount}</span> live
+            tenant{foundCount === 1 ? "" : "s"} across {checked} checked
+            domain{checked === 1 ? "" : "s"}
+          </p>
           {matches.map((m) => {
             const r = m.result;
             return (
@@ -84,6 +95,11 @@ export function CompanyLookup() {
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
                     <span className="font-medium truncate">{m.companyName}</span>
+                    {m.source === "tld-variant" && (
+                      <span className="text-[10px] uppercase tracking-wide text-muted/80 border border-border rounded-full px-1.5 py-0.5">
+                        regional
+                      </span>
+                    )}
                     {r.found ? (
                       <span className="text-[10px] uppercase tracking-wide text-good border border-good/30 bg-good/10 rounded-full px-1.5 py-0.5">
                         tenant
