@@ -61,7 +61,7 @@ export function BulkLookup() {
           rows={6}
           spellCheck={false}
           placeholder={"Paste domains, one per line or comma / space separated.\nDrop a .csv or .txt file anywhere here.\n\ncontoso.com\nfabrikam.com\nuser@adventure-works.com"}
-          className="w-full rounded-lg border border-border bg-surface px-3.5 py-2.5 text-sm outline-none focus:border-accent/70 focus:ring-2 focus:ring-accent/20 placeholder:text-muted/60 mono resize-y"
+          className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm outline-none transition-all focus:border-accent/60 focus:ring-4 focus:ring-accent/15 focus:bg-white/[0.06] placeholder:text-muted/60 mono resize-y"
         />
       </div>
 
@@ -107,7 +107,7 @@ export function BulkLookup() {
         <button
           onClick={run}
           disabled={loading || !count}
-          className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-accent/90 transition-colors"
+          className="btn-primary rounded-xl px-5 py-2 text-sm font-medium text-white disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? `Looking up ${count}…` : `Look up ${count || ""}`}
         </button>

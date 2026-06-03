@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Geist, Geist_Mono } from "next/font/google";
+import { BuiltByEvx, GitHubIcon, LogoMark } from "@/components/Brand";
 import "./globals.css";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
@@ -16,6 +17,8 @@ export const metadata: Metadata = {
     "Free, open-source tools for Microsoft 365 / Entra ID partners. Tenant ID lookup, bulk domain checks, and more. No login, no tracking.",
 };
 
+const REPO_URL = "https://github.com/evanapple83-png/partnerkit";
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
@@ -25,27 +28,32 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <header className="border-b border-border/80 backdrop-blur sticky top-0 z-10 bg-background/70">
-          <div className="mx-auto max-w-5xl px-5 h-14 flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-2 font-semibold">
-              <span className="inline-grid place-items-center w-7 h-7 rounded-lg bg-accent text-white text-sm font-bold">
-                P
-              </span>
+        <header className="sticky top-0 z-20 border-b border-white/[0.06] bg-background/60 backdrop-blur-xl">
+          <div className="mx-auto max-w-5xl px-5 h-[3.75rem] flex items-center justify-between">
+            <Link
+              href="/"
+              className="flex items-center gap-2.5 font-semibold tracking-tight"
+            >
+              <LogoMark />
               <span>
                 Partner<span className="text-accent">Kit</span>
               </span>
             </Link>
-            <nav className="flex items-center gap-5 text-sm text-muted">
-              <Link href="/tools/tenant-lookup" className="hover:text-foreground">
+            <nav className="flex items-center gap-1 text-sm">
+              <Link
+                href="/tools/tenant-lookup"
+                className="rounded-full px-3.5 py-1.5 text-muted hover:text-foreground hover:bg-white/[0.06] transition-colors"
+              >
                 Tenant Lookup
               </Link>
               <a
-                href="https://github.com/evanapple83-png/partnerkit"
-                className="hover:text-foreground"
+                href={REPO_URL}
                 target="_blank"
                 rel="noreferrer"
+                className="ml-1 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3.5 py-1.5 text-muted hover:text-foreground hover:border-white/25 transition-colors"
               >
-                GitHub
+                <GitHubIcon size={15} />
+                <span className="hidden sm:inline">GitHub</span>
               </a>
             </nav>
           </div>
@@ -53,16 +61,28 @@ export default function RootLayout({
 
         <main className="flex-1">{children}</main>
 
-        <footer className="border-t border-border/80 mt-16">
-          <div className="mx-auto max-w-5xl px-5 py-8 text-sm text-muted flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-between">
-            <p>
-              Open source · MIT · No login, no tracking. Built on public Microsoft
-              endpoints.
-            </p>
-            <p>
-              A community project ·{" "}
-              <span className="text-foreground/80">built by EvanExpert</span>
-            </p>
+        <footer className="mt-20 border-t border-white/[0.06]">
+          <div className="mx-auto max-w-5xl px-5 py-10">
+            <div className="flex flex-col sm:flex-row gap-6 sm:items-center sm:justify-between text-sm">
+              <div className="flex items-center gap-2.5">
+                <LogoMark size={24} />
+                <div>
+                  <p className="font-medium tracking-tight">
+                    Partner<span className="text-accent">Kit</span>
+                  </p>
+                  <p className="text-xs text-muted">
+                    A community project · <BuiltByEvx />
+                  </p>
+                </div>
+              </div>
+              <div className="text-xs text-muted leading-relaxed sm:text-right">
+                <p>Open source · MIT · No login, no tracking.</p>
+                <p>
+                  Built on public Microsoft endpoints. Not affiliated with
+                  Microsoft.
+                </p>
+              </div>
+            </div>
           </div>
         </footer>
       </body>

@@ -33,9 +33,9 @@ export default async function TenantPermalink({ params }: Props) {
   const result = isGuid(q) ? await lookupTenantById(q) : await lookupTenant(q);
 
   return (
-    <div className="mx-auto max-w-2xl px-5 py-10">
+    <div className="mx-auto max-w-2xl px-5 py-12 animate-fade-up">
       <div className="mb-7">
-        <h1 className="text-2xl font-semibold mono break-all">{q}</h1>
+        <h1 className="text-3xl font-semibold tracking-tight mono break-all">{q}</h1>
         <p className="text-muted mt-1.5 text-sm leading-relaxed">
           Live Microsoft 365 / Entra ID tenant lookup. Share this page with its
           URL, or{" "}

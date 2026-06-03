@@ -9,9 +9,9 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <div className="mx-auto max-w-2xl px-5 py-10">
+    <div className="mx-auto max-w-2xl px-5 py-12 animate-fade-up">
       <div className="mb-7">
-        <h1 className="text-2xl font-semibold">Tenant Lookup</h1>
+        <h1 className="text-3xl font-semibold tracking-tight">Tenant Lookup</h1>
         <p className="text-muted mt-1.5 text-sm leading-relaxed">
           Enter a domain to resolve its Microsoft 365 / Entra ID tenant ID,
           region, cloud instance and mail posture. You can also paste a tenant

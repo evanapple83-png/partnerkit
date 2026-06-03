@@ -12,7 +12,7 @@ export function LookupTabs() {
 
   return (
     <div>
-      <div className="inline-flex rounded-lg border border-border bg-surface p-1 mb-6">
+      <div className="inline-flex rounded-full border border-white/10 bg-white/[0.04] p-1 mb-6 backdrop-blur">
         {(
           [
             ["single", "Single"],
@@ -23,9 +23,9 @@ export function LookupTabs() {
           <button
             key={key}
             onClick={() => setTab(key)}
-            className={`rounded-md px-4 py-1.5 text-sm font-medium transition-colors ${
+            className={`rounded-full px-4.5 py-1.5 text-sm font-medium transition-all duration-300 ${
               tab === key
-                ? "bg-accent text-white"
+                ? "bg-white/[0.1] text-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_1px_3px_rgba(0,0,0,0.3)]"
                 : "text-muted hover:text-foreground"
             }`}
           >
