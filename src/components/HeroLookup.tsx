@@ -70,7 +70,7 @@ export function HeroLookup() {
       </form>
 
       <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-xs text-muted">
-        {["microsoft.com", "heineken.com", "softwareone.com"].map((d) => (
+        {["microsoft.com", "heineken.com", "accenture.com"].map((d) => (
           <button
             key={d}
             onClick={() => go(d)}

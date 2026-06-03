@@ -56,7 +56,7 @@ export function TenantLookup() {
       {!result && !error && !loading && (
         <div className="flex flex-wrap gap-2 text-xs text-muted">
           <span className="text-muted/70">Try:</span>
-          {["microsoft.com", "stanford.edu", "softwareone.com"].map((d) => (
+          {["microsoft.com", "stanford.edu", "accenture.com"].map((d) => (
             <button
               key={d}
               onClick={() => setQuery(d)}

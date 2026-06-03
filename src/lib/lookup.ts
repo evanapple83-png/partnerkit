@@ -425,6 +425,92 @@ export async function discoverByCompany(name: string): Promise<{
   return { query, checked: matches.length, matches };
 }
 
+// --- Many company names -> best domain + tenant per company ----------------
+
+export const COMPANY_BULK_LIMIT = 10;
+/** Directory candidates checked per company in bulk mode. */
+const BEST_OF = 3;
+
+export interface CompanyBest {
+  /** The name as the user typed it. */
+  query: string;
+  /** How many candidate domains were tenant-checked. */
+  candidatesChecked: number;
+  /** Best match: first live tenant in directory order, else the top hit. */
+  best?: CompanyMatch;
+  note?: string;
+}
+
+async function clearbitSuggest(query: string): Promise<ClearbitSuggestion[]> {
+  const res = await fetchWithTimeout(
+    `https://autocomplete.clearbit.com/v1/companies/suggest?query=${encodeURIComponent(
+      query,
+    )}`,
+  );
+  if (!res.ok) return [];
+  return (await res.json()) as ClearbitSuggestion[];
+}
+
+/**
+ * Resolve up to COMPANY_BULK_LIMIT company names to their most likely
+ * domain + tenant. Directory order is Clearbit's relevance ranking, so the
+ * first candidate with a live tenant wins.
+ */
+export async function discoverBestForCompanies(
+  names: string[],
+): Promise<CompanyBest[]> {
+  // Trim, drop empties, de-dupe case-insensitively, cap.
+  const seen = new Set<string>();
+  const queries: string[] = [];
+  for (const raw of names) {
+    const q = raw.trim();
+    if (!q) continue;
+    const key = q.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    queries.push(q);
+    if (queries.length >= COMPANY_BULK_LIMIT) break;
+  }
+
+  return mapLimit(queries, 3, async (query) => {
+    let suggestions: ClearbitSuggestion[];
+    try {
+      suggestions = await clearbitSuggest(query);
+    } catch {
+      return {
+        query,
+        candidatesChecked: 0,
+        note: "Company directory unavailable.",
+      };
+    }
+
+    const dedup = new Set<string>();
+    const picks = suggestions
+      .filter((s) => s.domain && !dedup.has(s.domain) && dedup.add(s.domain))
+      .slice(0, BEST_OF);
+
+    if (picks.length === 0) {
+      return { query, candidatesChecked: 0, note: "No company matched." };
+    }
+
+    const matches = await mapLimit(picks, BEST_OF, async (s) => ({
+      companyName: s.name,
+      logo: s.logo ?? undefined,
+      source: "directory" as const,
+      result: await lookupTenant(s.domain),
+    }));
+
+    // Prefer a live tenant whose company name exactly matches the query,
+    // then the first live tenant in directory (relevance) order.
+    const found = matches.filter((m) => m.result.found);
+    const exact = found.find(
+      (m) => m.companyName.toLowerCase() === query.toLowerCase(),
+    );
+    const best = exact ?? found[0] ?? matches[0];
+    return { query, candidatesChecked: matches.length, best };
+  });
+}
+
 /** Validate a tenant GUID by resolving its OpenID config (reverse lookup). */
 export async function lookupTenantById(input: string): Promise<TenantResult> {
   const id = input.trim().toLowerCase();

@@ -64,14 +64,13 @@ const TOOLS: Tool[] = [
 export default function Home() {
   return (
     <div className="relative overflow-hidden">
-      {/* Backdrop: engineering grid + drifting Fluent-blue glow */}
+      {/* Backdrop: clean black with one soft Fluent-blue glow */}
       <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute inset-0 h-[42rem] bg-grid" />
         <div
           className="absolute left-1/2 top-[-16rem] h-[30rem] w-[44rem] -translate-x-1/2 rounded-full blur-[120px]"
           style={{
             background:
-              "radial-gradient(closest-side, rgba(76,154,255,0.16), rgba(47,127,232,0.06), transparent)",
+              "radial-gradient(closest-side, rgba(76,154,255,0.14), rgba(47,127,232,0.05), transparent)",
           }}
         />
       </div>

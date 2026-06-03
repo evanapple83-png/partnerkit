@@ -127,19 +127,6 @@ body {
     color: transparent;
   }
 
-  /* Faint engineering grid, masked so it dissolves into the page. */
-  .bg-grid {
-    background-image:
-      linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-    background-size: 4.5rem 4.5rem;
-    mask-image: radial-gradient(
-      ellipse 75% 60% at 50% 0%,
-      #000 60%,
-      transparent 100%
-    );
-  }
-
   .animate-fade-up {
     animation: fade-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
