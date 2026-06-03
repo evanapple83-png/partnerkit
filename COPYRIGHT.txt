@@ -1,0 +1,12 @@
+PartnerKit
+Copyright (c) 2026 Evan Poul (EvanExpert)
+Licensed under the MIT License (see LICENSE).
+
+This is an independent, open-source community project. It is not affiliated
+with, endorsed by, or sponsored by Microsoft Corporation. "Microsoft",
+"Microsoft 365", "Entra", "Azure" and related marks are trademarks of
+Microsoft Corporation, used here only descriptively to identify the services
+this tool inspects.
+
+All lookups are performed against publicly accessible, unauthenticated
+Microsoft and DNS endpoints. PartnerKit stores no tenant data.
